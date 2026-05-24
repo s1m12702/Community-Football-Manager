@@ -57,43 +57,4 @@ public class UserController {
         model.addAttribute("success", "Parola a fost schimbată cu succes!");
         return "change-password";
     }
-
-    // --- METODELE PENTRU COMUNITATE ---
-
-    @GetMapping("/community")
-    public String showCommunity(HttpSession session, Model model) {
-        if (session.getAttribute("loggedInUser") == null) return "redirect:/login";
-        
-        model.addAttribute("users", userRepository.findAll());
-        return "community";
-    }
-
-    @PostMapping("/rate-user")
-    public String rateUser(@RequestParam Long targetUserId, 
-                           @RequestParam int stars, 
-                           HttpSession session, 
-                           RedirectAttributes redirectAttributes) { 
-        
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) return "redirect:/login";
-
-        // BLOCARE AUTO-VOT 
-        if (loggedInUser.getId().equals(targetUserId)) {
-            redirectAttributes.addFlashAttribute("error", "Nu îți poți acorda singur rating!");
-            return "redirect:/community";
-        }
-
-        User target = userRepository.findById(targetUserId).orElseThrow();
-        
-        // ACTUALIZARE STATISTICI RATING
-        target.setRatingCount(target.getRatingCount() + 1);
-        target.setRatingSum(target.getRatingSum() + stars); 
-        
-        userRepository.save(target);
-
-        redirectAttributes.addFlashAttribute("success", "Vot înregistrat pentru " + target.getUsername() + "!");
-        return "redirect:/community";
-    }
-
-    
 }

@@ -180,7 +180,7 @@ public class MatchController {
 
     // UC11: Procesează votul și actualizează reputația
    @PostMapping("/submit-feedback")
-public String submitFeedback(@RequestParam Long targetUserId, 
+    public String submitFeedback(@RequestParam Long targetUserId, 
                              @RequestParam String type, 
                              @RequestParam Long matchId,
                              HttpSession session,
@@ -274,6 +274,24 @@ public String submitFeedback(@RequestParam Long targetUserId,
 
         return "redirect:/my-organized-matches";
     }
+
+    @GetMapping("/my-matches")
+    public String showMyMatches(HttpSession session, Model model) {
+        // 1. Verificăm dacă userul este logat
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/login"; // Dacă nu e logat, îl trimitem la login
+        }
+
+        // 2. Aducem din baza de date meciurile pe care le-a creat acest user
+        List<Match> myMatches = matchRepository.findByOrganizer(loggedInUser);
+        
+        // 3. Trimitem lista către fișierul my-matches.jsp sub numele "myMatches"
+        model.addAttribute("myMatches", myMatches);
+
+        // 4. Returnăm numele fișierului JSP (fără extensia .jsp)
+        return "my-matches";
+}
 
     
 }

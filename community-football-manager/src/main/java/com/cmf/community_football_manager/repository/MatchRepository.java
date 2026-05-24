@@ -1,5 +1,6 @@
 package com.cmf.community_football_manager.repository;
 
+import com.cmf.community_football_manager.model.User;
 import com.cmf.community_football_manager.model.Match;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     // Validare UC5: Verifică dacă terenul e ocupat la acea dată și oră
     boolean existsByPitchIdAndMatchDateAndMatchTime(Long pitchId, java.time.LocalDate matchDate, java.time.LocalTime matchTime);
+
+    List<Match> findByOrganizer(User organizer);
 }

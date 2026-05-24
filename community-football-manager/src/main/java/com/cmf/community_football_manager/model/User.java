@@ -26,13 +26,6 @@ public class User {
     @Column(name = "is_confirmed")
     private boolean isConfirmed = false;
 
-    // --- Câmpuri pentru Rating General (Comunitate) ---
-    @Column(nullable = false)
-    private int ratingSum = 0; // Suma tuturor stelelor primite
-
-    @Column(nullable = false)
-    private int ratingCount = 0; // De câte ori a fost votat
-
     // --- Câmpuri pentru Statistici (UC10) ---
     @Column(nullable = false)
     private int matchesPlayed = 0; 
@@ -86,12 +79,6 @@ public class User {
         this.suspensionReason = suspensionReason;
     }
 
-    // --- Metodă inteligentă de calcul rating ---
-    public double getAverageRating() {
-        if (ratingCount == 0) return 0.0;
-        return Math.round(((double) ratingSum / ratingCount) * 10.0) / 10.0; 
-    }
-
     // --- Getteri și Setteri ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -110,12 +97,6 @@ public class User {
 
     public boolean isConfirmed() { return isConfirmed; }
     public void setConfirmed(boolean isConfirmed) { this.isConfirmed = isConfirmed; }
-
-    public int getRatingSum() { return ratingSum; }
-    public void setRatingSum(int ratingSum) { this.ratingSum = ratingSum; }
-
-    public int getRatingCount() { return ratingCount; }
-    public void setRatingCount(int ratingCount) { this.ratingCount = ratingCount; }
 
     public int getMatchesPlayed() { return matchesPlayed; }
     public void setMatchesPlayed(int matchesPlayed) { this.matchesPlayed = matchesPlayed; }

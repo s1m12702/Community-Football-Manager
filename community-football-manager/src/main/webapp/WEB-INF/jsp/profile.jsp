@@ -30,8 +30,7 @@
                     <a href="/matches" class="list-group-item list-group-item-action"><i class="bi bi-dribbble text-success"></i> Meciuri Disponibile</a>
                     <a href="/my-matches" class="list-group-item list-group-item-action fw-bold"><i class="bi bi-card-list text-primary"></i> Meciurile Mele</a>
                     <a href="/create-match" class="list-group-item list-group-item-action"><i class="bi bi-plus-circle"></i> Creează Meci </a>
-                    <a href="/community" class="list-group-item list-group-item-action"><i class="bi bi-people"></i> Comunitate & Top </a>
-                    <a href="/my-history" class="list-group-item list-group-item-action list-group-item-info"><i class="bi bi-star"></i> Acordă Feedback </a>
+                    <a href="/my-history" class="list-group-item list-group-item-action list-group-item-info"><i class="bi bi-star"></i> Istoricul Meu </a>
                     <a href="/change-password" class="list-group-item list-group-item-action text-secondary"><i class="bi bi-key"></i> Schimbă Parola</a>
                     
                     <c:if test="${loggedInUser.role.name() == 'ADMIN'}">
