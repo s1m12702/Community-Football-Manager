@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentația Proiectului: Community Football Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; color: #333; }
+        h1, h2, h3 { color: #2c3e50; }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        h2 { margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        ul { margin-bottom: 20px; }
+        li { margin-bottom: 5px; }
+        .page-break { page-break-after: always; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: Consolas, monospace; background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <h1>Documentația Proiectului: Community Football Manager</h1>
+
+    <h2>1. Introducere</h2>
+    <p><strong>Community Football Manager</strong> este o aplicație web dezvoltată cu scopul de a digitaliza și facilita organizarea meciurilor de fotbal la nivel de comunitate. În mod tradițional, organizarea unui meci amator implică multiple conversații pe grupuri de mesagerie, dificultăți în găsirea unui teren disponibil și lipsa unei evidențe clare a participanților. Această aplicație rezolvă aceste probleme oferind o platformă centralizată unde pasionații de fotbal se pot întâlni virtual, pot rezerva terenuri și își pot construi un profil de jucător.</p>
+    <p>Platforma conectează direct cererea (jucătorii amatori) cu oferta (proprietarii sau administratorii de baze sportive). Mai mult decât un simplu utilitar de rezervări, aplicația integrează elemente de "gamification" – monitorizarea victoriilor, a golurilor marcate și un sistem de reputație bazat pe voturile comunității (Fair-play, Skill, Punctualitate) – promovând astfel un mediu sportiv competitiv, dar corect și civilizat.</p>
+
+    <hr>
+
+    <h2>2. Cerințe Funcționale</h2>
+    <p>Sistemul este proiectat să deservească trei categorii principale de actori, fiecare cu un set distinct de permisiuni și responsabilități: <strong>Jucător (PLAYER)</strong>, <strong>Furnizor de Terenuri (PITCH_PROVIDER)</strong> și <strong>Administrator (ADMIN)</strong>.</p>
+
+    <h3>2.1. Funcționalități Generale și Autentificare</h3>
+    <ul>
+        <li><strong>Înregistrarea Utilizatorilor:</strong> Utilizatorii pot crea conturi noi, având posibilitatea de a opta pentru rolul de PLAYER sau PITCH_PROVIDER. Din motive de securitate, sistemul respinge automat tentativele de înregistrare cu rolul de ADMIN.</li>
+        <li><strong>Confirmarea Contului:</strong> Pentru validarea adreselor, sistemul trimite automat un email de confirmare cu un link unic. Conturile neconfirmate nu se pot autentifica.</li>
+        <li><strong>Autentificarea (Login) și Gestiunea Sesiunii:</strong> Accesul în aplicație se face pe baza adresei de email și a parolei. Sistemul verifică statusul contului (confirmat, nesuspendat).</li>
+        <li><strong>Recuperarea Parolei:</strong> Utilizatorii care și-au uitat parola pot solicita resetarea acesteia. Sistemul generează o parolă temporară și o expediază pe email.</li>
+    </ul>
+
+    <h3>2.2. Modulul pentru Jucători (PLAYER)</h3>
+    <ul>
+        <li><strong>Crearea unui Meci (UC5):</strong> Un jucător (care devine automat "Organizator") poate crea un meci alegând un teren din lista celor disponibile, stabilind data, ora și numărul maxim de participanți. Sistemul validează disponibilitatea terenului pentru a preveni suprapunerile.</li>
+        <li><strong>Înscrierea la Meciuri (UC6):</strong> Jucătorii pot explora lista de meciuri "ACTIVE" și se pot înscrie, cu condiția ca limita de participanți să nu fi fost atinsă, iar jucătorul să nu fie deja înscris.</li>
+        <li><strong>Finalizarea Meciului și Actualizarea Statisticilor (UC7):</strong> După disputarea partidei, Organizatorul este responsabil cu închiderea meciului în aplicație. El introduce scorul final și atribuie golurile și victoriile participanților. Aplicația validează strict aceste date (ex: suma golurilor individuale nu poate depăși scorul total al echipei). Datele validate actualizează profilul permanent al jucătorilor (Meciuri Jucate, Goluri, Victorii).</li>
+        <li><strong>Istoricul Meciurilor și Sistemul de Feedback (UC11):</strong> Jucătorii își pot vizualiza istoricul meciurilor "FINISHED". Pentru meciurile la care au participat, ei pot acorda un vot de reputație celorlalți jucători (Fair-play, Skill, Punctualitate). Sistemul previne auto-votul și limitarea la un singur vot pe categorie/jucător/meci.</li>
+    </ul>
+
+    <h3>2.3. Modulul pentru Furnizorii de Terenuri (PITCH_PROVIDER)</h3>
+    <ul>
+        <li><strong>Gestiunea Bazei Sportive:</strong> Furnizorii pot adăuga terenuri noi pe platformă, specificând detalii precum numele bazei, adresa exactă și tariful orar.</li>
+        <li><strong>Gestionarea Rezervărilor:</strong> (Conform modelului de date) Furnizorii pot vizualiza cererile de rezervare pe intervale orare (TimeSlots) făcute de jucători și le pot aproba (CONFIRMED) sau respinge (REJECTED), furnizând un motiv pentru respingere.</li>
+    </ul>
+
+    <h3>2.4. Modulul de Administrare (ADMIN)</h3>
+    <ul>
+        <li><strong>Moderarea Comunității:</strong> Administratorii au capacitatea de a vizualiza toți utilizatorii și de a suspenda conturile (setând <code>isSuspended = true</code> și adăugând un <code>suspensionReason</code>). Utilizatorii suspendați nu se mai pot autentifica.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>3. Unelte Utilizate</h2>
+    <p>Pentru dezvoltarea proiectului "Community Football Manager", a fost selectat un stack tehnologic robust, bazat pe ecosistemul Java, recunoscut pentru stabilitate, scalabilitate și securitate în dezvoltarea aplicațiilor web de tip enterprise.</p>
+
+    <h3>3.1. Backend Framework: Spring Boot 4.0.6</h3>
+    <p>Proiectul folosește <strong>Spring Boot</strong>, cadrul de dezvoltare principal în ecosistemul Java modern. Motivul principal pentru alegerea Spring Boot este convenția peste configurare (convention over configuration), care elimină necesitatea fișierelor XML complexe (ex. web.xml) și accelerează timpul de dezvoltare.</p>
+    <ul>
+        <li><strong>Spring Web MVC:</strong> Utilizat pentru crearea arhitecturii web și expunerea endpoint-urilor. Controlează fluxul HTTP, primește cererile (GET, POST), le rutează către funcțiile din controllere și returnează view-urile corespunzătoare.</li>
+        <li><strong>Spring Boot Mail:</strong> Integrat pentru a facilita comunicarea asincronă cu utilizatorii. Folosește serverul SMTP de la Google (Gmail) pentru a expedia link-uri de confirmare a conturilor noi și parole temporare în cazul recuperării contului.</li>
+    </ul>
+
+    <h3>3.2. Limbajul de Programare: Java 21</h3>
+    <p>S-a optat pentru <strong>Java 21</strong>, o versiune Long-Term Support (LTS). Java asigură un sistem de tipuri puternic, programare orientată pe obiecte strictă și performanțe excelente datorită optimizărilor recente din JVM (Java Virtual Machine). Alegerea Java 21 permite utilizarea noilor funcționalități ale limbajului, scriind un cod mai curat și mai eficient.</p>
+
+    <h3>3.3. Baza de Date și ORM (Object-Relational Mapping)</h3>
+    <ul>
+        <li><strong>MySQL:</strong> Un sistem de gestiune a bazelor de date relaționale (RDBMS) consacrat, ales pentru viteza și fiabilitatea sa. Modelează perfect natura relațională a datelor din această aplicație (ex: Relația de tip Many-to-Many între Meciuri și Jucători). Pentru conexiune se folosește driver-ul <code>mysql-connector-j</code>.</li>
+        <li><strong>Spring Data JPA & Hibernate:</strong> În loc de a scrie interogări SQL manuale (ceea ce predispune la erori și vulnerabilități precum SQL Injection), aplicația folosește Hibernate ca implementare JPA (Java Persistence API). Entitățile Java (clasele din model) sunt mapate direct pe tabelele din baza de date folosind adnotări (<code>@Entity</code>, <code>@Table</code>, <code>@OneToMany</code>). Proprietatea <code>spring.jpa.hibernate.ddl-auto=update</code> asigură sincronizarea automată a structurii bazei de date cu codul Java.</li>
+    </ul>
+
+    <h3>3.4. Frontend și Tehnologii Web</h3>
+    <ul>
+        <li><strong>JSP (JavaServer Pages):</strong> Ca motor de templating, s-a ales JSP. Deși este o tehnologie mai clasică în comparație cu framework-urile moderne tip SPA (React, Angular), JSP se integrează nativ cu Spring MVC și Servlet-urile Java.</li>
+        <li><strong>JSTL (JSP Standard Tag Library):</strong> Utilizat extensiv (<code>&lt;c:forEach&gt;</code>, <code>&lt;c:if&gt;</code>) pentru a genera conținut HTML dinamic pe baza structurilor de date trimise de server (ex: iterarea peste lista de meciuri sau de terenuri disponibile).</li>
+    </ul>
+
+    <h3>3.5. Server Web și Managementul Dependințelor</h3>
+    <ul>
+        <li><strong>Apache Tomcat (Embedded):</strong> Datorită Spring Boot, aplicația vine la pachet cu propriul server web Tomcat. Acest lucru înseamnă că aplicația poate fi rulată independent (ca un fișier JAR/WAR autonom) fără a necesita o instalare și configurare separată a unui server de aplicații pe mașina gazdă.</li>
+        <li><strong>Maven:</strong> Utilizat ca instrument de management al proiectului și al dependințelor. Fișierul <code>pom.xml</code> centralizează toate bibliotecile externe necesare (librăriile Spring, driver-ul MySQL, JSTL), asigurând consistența build-ului pe orice mașină de dezvoltare.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>4. Arhitectura Proiectului</h2>
+    <p>Aplicația <strong>Community Football Manager</strong> este construită pe o arhitectură <strong>Monolitică</strong>, structurată intern pe baza modelului arhitectural <strong>MVC (Model-View-Controller)</strong> și organizată pe straturi (Layered Architecture). Această decizie arhitecturală este ideală pentru proiecte de dimensiuni medii unde coeziunea logică și simplitatea implementării și deployment-ului sunt prioritare.</p>
+
+    <h3>4.1. Structura pe Straturi (Layered Architecture)</h3>
+    <p>Codul sursă este organizat logic în mai multe pachete sub <code>com.cmf.community_football_manager</code>, fiecare având o responsabilitate unică, respectând principiul <em>Separation of Concerns</em>:</p>
+    <ol>
+        <li><strong>Stratul de Prezentare (View & Controller):</strong>
+            <ul>
+                <li><strong>Views (<code>src/main/webapp/WEB-INF/jsp/</code>):</strong> Aici rezidă fișierele <code>.jsp</code>. Ele sunt pasive și conțin doar logica minimă de afișare (folosind JSTL). Nu accesează niciodată baza de date direct.</li>
+                <li><strong>Controllers (<code>/controller</code>):</strong> Clasele adnotate cu <code>@Controller</code> (ex: <code>AuthController</code>, <code>MatchController</code>). Acestea interceptează cererile HTTP trimise de utilizator (ex: un formular de creare meci). Ele extrag datele din cerere, validează logica de business, apelează stratul de date și apoi populează un obiect <code>Model</code> (un fel de dicționar de date) care este trimis mai departe către View pentru a fi randat.</li>
+            </ul>
+        </li>
+        <li><strong>Stratul de Date (Model & Repository):</strong>
+            <ul>
+                <li><strong>Model (<code>/model</code>):</strong> Conține entitățile aplicației (<code>User</code>, <code>Match</code>, <code>Pitch</code>, <code>Reservation</code>, <code>FeedbackVote</code>). Acestea sunt clase Java simple (POJO) adnotate specific JPA (<code>@Entity</code>, <code>@Id</code>, <code>@Column</code>). Ele reprezintă structura tabelelor din baza de date și mențin starea aplicației. Mai mult, ele modelează relațiile (ex: <code>Match</code> are un <code>@ManyToMany</code> cu <code>User</code> pentru participanți).</li>
+                <li><strong>Repository (<code>/repository</code>):</strong> Conține interfețe care extind <code>JpaRepository</code>. Aici, Spring Data JPA generează automat la runtime implementarea pentru operațiile CRUD (Create, Read, Update, Delete) și query-uri personalizate pe baza denumirii metodelor (ex: <code>matchRepository.existsByPitchIdAndMatchDateAndMatchTime(...)</code>). Acest strat ablaționează complet complexitatea interogărilor SQL.</li>
+            </ul>
+        </li>
+        <li><strong>Stratul de Servicii (<code>/service</code>):</strong>
+            <ul>
+                <li>Acolo unde logica este independentă de fluxul web, este extrasă în servicii (adnotate cu <code>@Service</code>). De exemplu, <code>EmailService</code> encapsulează toată logica necesară construirii și trimiterii email-urilor de confirmare, decuplând acest comportament de controller-ul de autentificare.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>4.2. Gestiunea Sesiunilor și Securitatea (Custom Auth)</h3>
+    <p>Un aspect notabil al arhitecturii este decizia de a <strong>nu</strong> utiliza un framework greu precum Spring Security, ci de a implementa un mecanism custom de gestiune a sesiunilor folosind API-ul nativ <code>HttpSession</code> din Servlet-uri.</p>
+    <ul>
+        <li><strong>Fluxul de Login:</strong> Când utilizatorul introduce datele corecte în <code>AuthController</code>, controller-ul creează o sesiune HTTP legată de browser-ul utilizatorului și stochează obiectul <code>User</code> extras din baza de date direct în sesiune: <code>session.setAttribute("loggedInUser", user)</code>.</li>
+        <li><strong>Autorizarea (Authorization):</strong> Pe fiecare metodă din <code>MatchController</code> sau <code>ProviderController</code> care necesită autentificare, primul pas este preluarea utilizatorului din sesiune. Dacă <code>session.getAttribute("loggedInUser") == null</code>, cererea este respinsă și utilizatorul este redirectat imediat (<code>return "redirect:/login";</code>).</li>
+        <li><strong>Validarea Permisiunilor (Role-Based Access):</strong> După verificarea logării, logica din controllere aplică reguli de autorizare specifice. De exemplu, în funcția de finalizare a unui meci (<code>finish-match-form</code>), sistemul verifică: <code>match.getOrganizer().getId().equals(loggedInUser.getId())</code>. Dacă utilizatorul curent nu este cel care a organizat meciul, actiunea îi este interzisă.</li>
+    </ul>
+    <p>Această abordare este mai ușor de înțeles și depanat pentru o aplicație academică sau de dimensiuni mici, dar menține totuși integritatea logică a datelor și previne accesul neautorizat la resurse.</p>
+
+    <h3>4.3. Procesarea Datelor și Integritatea (Business Logic Validations)</h3>
+    <p>Arhitectura plasează un accent puternic pe validările "Server-Side" executate în Controller înainte ca datele să atingă Repository-ul. Exemple arhitecturale din proiect:</p>
+    <ul>
+        <li><strong>Prevenirea coliziunilor fizice:</strong> Când un meci este creat (<code>MatchController.createMatch</code>), se face un query preventiv pentru a vedea dacă un meci există deja la acel teren (<code>pitchId</code>), la acea dată (<code>matchDate</code>) și oră (<code>matchTime</code>). Dacă există, tranzacția este anulată imediat, iar utilizatorul primește feedback.</li>
+        <li><strong>Prevenirea stărilor imposibile:</strong> La introducerea scorului (UC7), controller-ul face suma tuturor golurilor declarate de organizator pentru fiecare jucător. Dacă suma matematică depășește scorul total general declarat al meciului, sistemul aruncă o eroare logică, protejând acuratețea datelor statistice pe termen lung din tabela <code>User</code>.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>5. Diagrama Entitate-Relație (ERD)</h2>
+    <p>Mai jos este prezentată diagrama care modelează structura bazei de date și relațiile dintre entitățile principale ale aplicației:</p>
+
+<pre><code class="language-mermaid">erDiagram
+    USER {
+        Long id PK
+        String username
+        String email
+        String password
+        String role "PLAYER, PITCH_PROVIDER, ADMIN"
+        boolean isConfirmed
+        int matchesPlayed
+        int victories
+        int goalsScored
+        int fairPlayVotes
+        int skillVotes
+        int punctualityVotes
+        boolean isSuspended
+        String suspensionReason
+    }
+
+    PITCH {
+        Long id PK
+        String name
+        String address
+        double pricePerHour
+        Long provider_id FK
+    }
+
+    MATCH {
+        Long id PK
+        LocalDate matchDate
+        LocalTime matchTime
+        int maxParticipants
+        String status "ACTIVE, FINISHED"
+        int scoreA
+        int scoreB
+        Long pitch_id FK
+        Long organizer_id FK
+    }
+
+    RESERVATION {
+        Long id PK
+        String status "PENDING, CONFIRMED, REJECTED"
+        String rejectionReason
+        Long player_id FK
+        Long time_slot_id FK
+    }
+
+    TIME_SLOT {
+        Long id PK
+        LocalDate slotDate
+        LocalTime startTime
+        LocalTime endTime
+        boolean isBooked
+        Long pitch_id FK
+    }
+
+    FEEDBACK_VOTE {
+        Long id PK
+        Long evaluatorId FK "Evaluator User"
+        Long targetUserId FK "Target User"
+        Long matchId FK
+    }
+
+    %% Relationships
+    USER ||--o{ PITCH : "owns (as Provider)"
+    USER ||--o{ MATCH : "organizes"
+    USER }o--o{ MATCH : "participates in (match_participants table)"
+    USER ||--o{ RESERVATION : "makes"
+    
+    PITCH ||--o{ MATCH : "hosts"
+    PITCH ||--o{ TIME_SLOT : "has"
+    
+    TIME_SLOT ||--o{ RESERVATION : "is requested in"
+    
+    USER ||--o{ FEEDBACK_VOTE : "gives (evaluator)"
+    USER ||--o{ FEEDBACK_VOTE : "receives (target)"
+    MATCH ||--o{ FEEDBACK_VOTE : "in context of"
+</code></pre>
+
+    <h3>Explicația Relațiilor Principale:</h3>
+    <ol>
+        <li><strong>User - Match (Organizator):</strong> Relație <code>One-to-Many</code>. Un utilizator poate organiza mai multe meciuri, dar un meci are un singur organizator (<code>organizer_id</code> în <code>Match</code>).</li>
+        <li><strong>User - Match (Participanți):</strong> Relație <code>Many-to-Many</code>. Un meci are o listă de participanți (<code>List&lt;User&gt; participants</code>), iar un jucător poate fi înscris la mai multe meciuri. Aceasta se rezolvă în baza de date printr-o tabelă de legătură <code>match_participants</code>.</li>
+        <li><strong>User - Pitch:</strong> Relație <code>One-to-Many</code>. Un furnizor (PITCH_PROVIDER) deține mai multe terenuri, un teren aparține unui singur furnizor (<code>provider_id</code>).</li>
+        <li><strong>Pitch - Match:</strong> Relație <code>One-to-Many</code>. Pe un teren se pot juca mai multe meciuri, un meci are loc pe un singur teren.</li>
+        <li><strong>Sistemul de Feedback:</strong> <code>FeedbackVote</code> este o entitate tranzacțională care leagă un Utilizator Evaluator, un Utilizator Țintă (cel evaluat) și Meciul în contextul căruia s-a acordat votul, asigurând trasabilitatea și prevenind votul multiplu.</li>
+    </ol>
+
+</body>
+</html>
